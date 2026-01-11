@@ -644,18 +644,16 @@ elif st.session_state.active_tab == "Tab 3 다중 티커 비교":
 
     
     st.markdown("3️⃣ Tab 3 → 어떤 종목을 선택할 것인가?")
-    st.caption(f"**Sharpe Ratio** = (수익률 - 기준 금리%) / 변동성, 통상 **1 이상:** 우수")
-    st.caption("간단히, Sharpe Ratio는 리턴/리스크. 투자 매력도를 나타내는 값 입니다.")
-    st.caption("수치가 높을수록, 적은 기회비용으로 높은 수익을 내는 구조입니다.")
+    st.caption("간단히, Sharpe Ratio는 리턴/리스크. 투자 매력도를 나타내는 값 입니다. **Sharpe Ratio** = (수익률 - 기준 금리%) / 변동성")
     st.caption(
         """
         <span style='color: red; font-weight: bold;'>빨간색</span>에 비해, 
-        <span style='color: blue; font-weight: bold;'>파란색</span>이 매력적인 종목입니다. 
+        <span style='color: blue; font-weight: bold;'>파란색</span>이 기회비용 대비 높은 수익을 보이는 종목입니다. 
         """,
         unsafe_allow_html=True
     )
     st.caption("좌상단에 가까울수록 좋은 종목이지만, 높은 수익률을 위해 리스크를 감수하는 것도 중요합니다.")
-    st.caption("배당상품은 해당 탭에서는 좋은 평가를 받지 못하니 참고하세요.")
+    st.caption("배당금 total return은 아직 고려하지 못해 배당주는 박한 평가를 받는 점 참고 바랍니다. \n\n")
 
     
     # 세션 상태에서 다중 티커 입력값을 가져와 기본값으로 사용 (탭 전환 시 기본값 설정됨)
@@ -728,6 +726,7 @@ elif st.session_state.active_tab == "Tab 3 다중 티커 비교":
 
     else:
         st.info("티커를 입력해 주세요.")
+
 
 
 
