@@ -574,11 +574,11 @@ if st.session_state.active_tab == "빅테크 PER":
         if new_selections != st.session_state['tech_select_state']:
             st.session_state['tech_select_state'] = new_selections
             st.rerun()
-
-    st.caption("ETF의 적정 가치를 판단하는 것은 어렵습니다.\n")
-    st.caption("빅테크의 평균 PER로 **투자 시기**를 결정하세요.")
-    st.caption("단순 PER의 평균치가 아니라, 마치 빅테크 top 8을 한개 회사로 고려하였을 때의 PER을 산출했습니다.")
-
+            
+    st.caption("이 페이지는 단순 매수/매도 신호가 아니라, 투자 속도를 조절하기 위한 참고 지표입니다. ")
+    st.caption("ETF는 개별 종목처럼 적정 가치를 계산하는 것이 쉽지 않습니다. ")
+    st.caption("Top 8 빅테크를 하나의 기업이라고 가정해 PER을 산출했습니다.")
+    st.caption("중위값, 평균값을 보시고 현재 주가의 적정성을 판단해보세요. ")
 # ------------------------------------------------------------------------------
 # 탭 2: 적립 모드 (DCA) (유지)
 # ------------------------------------------------------------------------------
@@ -686,8 +686,8 @@ elif st.session_state.active_tab == "적립식 투자":
         col_dca_summary[1].metric("총 투자 금액", f"${cumulative_investment:,.2f}")
         col_dca_summary[2].metric("총 매수 주식 수", f"{final_row['Total_Shares'].item():,.4f} 주")
 
-    st.caption("하락장은 지속적으로 물을 탈 수 있는 기회.\n")
-    st.caption("**장기적인 우상향**을 믿고 꾸준히 **적립식으로 매수**하세요.")
+    st.caption("하락장은 장기 투자자에게 평균 매입 단가를 낮출 수 있는 구간입니다.")
+    st.caption("단기 예측보다는 **장기 우상향**을 전제로 **적립식 매수 전략**을 유지하세요.")
 
 # ------------------------------------------------------------------------------
 # 탭 3: 다중 티커 비교 (수정: Sharpe Ratio 색상 스케일 변경)
@@ -757,18 +757,21 @@ elif st.session_state.active_tab == "다중 티커 비교":
 
             # --- 사용자 요청 반영 (Help 제거, 샤프 비율 하단 분리 및 기준 간소화) ---
             st.markdown(f"💡 **분석 결과:** 가장 효율적인 자산은 **{df_d.iloc[0]['Ticker']}**입니다.")
-            st.caption(f"ℹ️ 기간: {start_date_multi}~{end_date_multi} | 기준금리 {user_rf}% 반영")
+            #st.caption(f"ℹ️ 기간: {start_date_multi}~{end_date_multi} | 기준금리 {user_rf}% 반영")
             st.caption(f"**Sharpe Ratio** = (수익률 - {user_rf}%) / 변동성, 통상 **1 이상:** 우수")
+            st.caption("간단히, Sharpe Ratio는 리턴/리스크. 투자 매력도를 나타내는 값 입니다.")
+            st.caption("수치가 높을수록, 적은 기회비용으로 높은 수익을 내는 구조입니다.")
             st.caption(
                 """
-                Sharpe 지수 : 
-                <span style='color: red; font-weight: bold;'>빨간색</span>은 상대적으로 낮고, 
-                <span style='color: blue; font-weight: bold;'>파란색</span>은 상대적으로 높게 표기함.
+                <span style='color: red; font-weight: bold;'>빨간색</span>은 한 번 더 고민하시고, 
+                차라리 <span style='color: blue; font-weight: bold;'>파란색</span>을 투자하세요.
                 """,
                 unsafe_allow_html=True
             )
+            st.caption("좌상단에 가까울수록 좋지만, 높은 수익률을 위해 리스크를 감수하는 것도 중요합니다.")
     else:
         st.info("티커를 입력해 주세요.")
+
 
 
 
