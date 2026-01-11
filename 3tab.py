@@ -535,7 +535,7 @@ if st.session_state.active_tab == "빅테크 PER":  # <-- 탭 이름을 "재무 
         editor_df['시가총액'] = editor_df['MarketCap'].apply(format_value)
         editor_df['순이익'] = editor_df['NetIncome'].apply(format_value)
 
-        st.markdown("**분석 포함 종목 선택**", help="체크를 해제하면 전체 평균 계산에서 제외됩니다.")
+        st.markdown("**분석 포함 종목 선택(USD)**", help="체크를 해제하면 전체 평균 계산에서 제외됩니다.")
 
         edited_df = st.data_editor(
             editor_df[['Select', 'Ticker', '시가총액', '순이익', 'PER']],
@@ -754,4 +754,5 @@ elif st.session_state.active_tab == "다중 티커 비교":
             st.caption("좌상단에 가까울수록 좋은 종목이지만, 높은 수익률을 위해 리스크를 감수하는 것도 중요합니다.")
     else:
         st.info("티커를 입력해 주세요.")
+
 
