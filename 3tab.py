@@ -9,7 +9,7 @@ import time
 import pytz
 
 # ==============================================================================
-# 0. 전역 설정 및 상수 정의 (유지)
+# 0. 전역 설정 및 상수 정의 (수정: PER 기준 삭제)
 # ==============================================================================
 DEFAULT_BIG_TECH_TICKERS = ['NVDA', 'AAPL', 'GOOGL', 'MSFT', 'AMZN', 'AVGO', 'META', 'TSLA']
 DCA_DEFAULT_TICKER = "QQQ"  # DCA 탭 기본 티커
@@ -20,22 +20,9 @@ KST = pytz.timezone('Asia/Seoul')
 NOW_KST = datetime.now(KST)
 TODAY = NOW_KST.date()
 
-# PER 기준 상수
-PER_CRITERIA_DYNAMIC = {
-    'BUY_3X': 30.0, 'BUY_2X': 32.0, 'BUY_1X': 35.0,
-    'HOLD': 38.0, 'SELL_15': 41.0, 'SELL_30': 45.0, 'SELL_50': 45.0
-}
+# PER 기준 상수 (제거됨)
 
-# PER 기준선 Plotly 스타일
-PER_LINE_STYLES = {
-    PER_CRITERIA_DYNAMIC['BUY_3X']: ('green', '30.0 (3X 매수)'),
-    PER_CRITERIA_DYNAMIC['BUY_2X']: ('darkgreen', '32.0 (2X 매수)'),
-    PER_CRITERIA_DYNAMIC['BUY_1X']: ('blue', '35.0 (1X 매수)'),
-    PER_CRITERIA_DYNAMIC['HOLD']: ('orange', '38.0 (HOLD)'),
-    PER_CRITERIA_DYNAMIC['SELL_15']: ('red', '41.0 (15% 매도)'),
-    PER_CRITERIA_DYNAMIC['SELL_30']: ('darkred', '45.0 (30% 매도)')
-}
-PER_LEVELS_SORTED = sorted(list(set(PER_CRITERIA_DYNAMIC.values())))
+# PER 기준선 Plotly 스타일 (제거됨)
 
 
 # ==============================================================================
@@ -246,7 +233,7 @@ def calculate_per_and_indicators(df, eps):
 
 
 # ==============================================================================
-# 3. 유틸리티 및 포매팅 함수 (유지)
+# 3. 유틸리티 및 포매팅 함수 (수정: get_per_color 제거)
 # ==============================================================================
 
 @st.cache_data
@@ -261,29 +248,11 @@ def format_value(val):
     return f"{val:,.2f}"
 
 
-def get_per_color(per_value):
-    """PER 값에 따른 색상을 반환합니다."""
-    if np.isnan(per_value): return "gray", "N/A"
-
-    if per_value < PER_CRITERIA_DYNAMIC['BUY_3X']:
-        return "green", "3배 레버리지 매수 구간 (30 미만)"
-    elif PER_CRITERIA_DYNAMIC['BUY_3X'] <= per_value < PER_CRITERIA_DYNAMIC['BUY_2X']:
-        return "#90ee90", "2배 레버리지 매수 구간 (30 ~ 32)"
-    elif PER_CRITERIA_DYNAMIC['BUY_2X'] <= per_value < PER_CRITERIA_DYNAMIC['BUY_1X']:
-        return "blue", "1배 매수 구간 (32 ~ 35)"
-    elif PER_CRITERIA_DYNAMIC['BUY_1X'] <= per_value < PER_CRITERIA_DYNAMIC['HOLD']:
-        return "orange", "현금 보유 구간 (35 ~ 38)"
-    elif PER_CRITERIA_DYNAMIC['HOLD'] <= per_value < PER_CRITERIA_DYNAMIC['SELL_15']:
-        return "red", "3배 매도 구간 (38 ~ 41)"
-    elif PER_CRITERIA_DYNAMIC['SELL_15'] <= per_value < PER_CRITERIA_DYNAMIC['SELL_30']:
-        return "#8b0000", "2배 매도 구간 (41 ~ 45)"
-    elif per_value >= PER_CRITERIA_DYNAMIC['SELL_30']:
-        return "#8b0000", "매도 구간 (45 이상)"
-    return "black", "N/A"
+# get_per_color 함수는 제거됨
 
 
 # ==============================================================================
-# 4. Streamlit UI 및 레이아웃 설정 (Sidebar Fix)
+# 4. Streamlit UI 및 레이아웃 설정 (Sidebar Fix) (유지)
 # ==============================================================================
 
 st.set_page_config(layout="wide", page_title="Twoziq 투자 가이드")
@@ -421,7 +390,7 @@ st.markdown("---")
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# 탭 1: 재무 분석 (빅테크) (수정: 현재 PER 표시 제거, 표 재배치)
+# 탭 1: 재무 분석 (빅테크) (수정: PER 기준선, 기준표, get_per_color 호출 제거)
 # ------------------------------------------------------------------------------
 if st.session_state.active_tab == "빅테크 PER":  # <-- 탭 이름을 "재무 분석"으로 가정하고 수정
 
@@ -439,11 +408,13 @@ if st.session_state.active_tab == "빅테크 PER":  # <-- 탭 이름을 "재무 
     if total_net_income > 0:
         average_per = total_market_cap / total_net_income
         average_per_str = f"{average_per:,.2f}"
-        dynamic_color, position_text_raw = get_per_color(average_per)
+        # dynamic_color, position_text_raw = get_per_color(average_per) # <--- get_per_color 호출 제거
+        position_text_raw = "현재 평균 PER" # <--- 대체 문구
     else:
         average_per = np.nan
         average_per_str = "N/A"
-        dynamic_color, position_text_raw = "#gray", "데이터 없음"
+        # dynamic_color, position_text_raw = "#gray", "데이터 없음" # <--- get_per_color 호출 제거
+        position_text_raw = "데이터 없음"
 
     group_per_series, hist_error_tab1 = calculate_accurate_group_per_history(
         selected_tickers, start_date=start_date_final, end_date=end_date_final
@@ -454,7 +425,6 @@ if st.session_state.active_tab == "빅테크 PER":  # <-- 탭 이름을 "재무 
     elif group_per_series is None or group_per_series.empty:
         st.info("선택된 종목들의 유효한 데이터가 부족하여 그래프를 표시할 수 없습니다.")
     else:
-        # 0.98 분위수 이상의 이상치 제거는 주석 처리 (원래 코드에서 삭제되었으므로 복구하지 않음)
         clean_per_values = group_per_series.dropna()
         avg_per_hist = clean_per_values.mean()
         median_per_hist = clean_per_values.median()
@@ -468,10 +438,9 @@ if st.session_state.active_tab == "빅테크 PER":  # <-- 탭 이름을 "재무 
             showlegend=False
         ))
 
-        # PER 레벨 기준선 추가
-        for level, (color, name) in PER_LINE_STYLES.items():
-            fig_per_tab1.add_hline(y=level, line_dash="dot", line_color=color, opacity=0.5,
-                                   annotation_text=name, annotation_position="bottom right")
+        # PER 레벨 기준선 추가 (제거)
+        # for level, (color, name) in PER_LINE_STYLES.items():
+        #     fig_per_tab1.add_hline(...)
 
         fig_per_tab1.add_hline(y=avg_per_hist, line_dash="dash", line_color="#d62728",
                                annotation_text=f"평균: {avg_per_hist:.2f}",
@@ -483,7 +452,6 @@ if st.session_state.active_tab == "빅테크 PER":  # <-- 탭 이름을 "재무 
         fig_per_tab1.update_layout(
             title="미국 빅테크 Top8 평균 PER",
             xaxis_title="날짜",
-            # yaxis_title="PER", # 주석 처리된 y축 타이틀 유지
             hovermode="x unified",
             template="plotly_white",
             height=500,
@@ -506,7 +474,7 @@ if st.session_state.active_tab == "빅테크 PER":  # <-- 탭 이름을 "재무 
         st.metric(
             label="금일 기준 평균 PER",
             value=average_per_str,
-            delta=position_text_raw if average_per_str != "N/A" else None,
+            # delta=position_text_raw if average_per_str != "N/A" else None, # <--- delta 제거
             delta_color='off'
         )
     with col_sum2:
@@ -516,24 +484,17 @@ if st.session_state.active_tab == "빅테크 PER":  # <-- 탭 이름을 "재무 
 
     st.markdown("---")
 
-    # 🚨 수정된 부분: 기준표와 Data Editor를 가로(데스크톱)/세로(모바일) 배치
-    col_criteria, col_editor = st.columns([1, 3]) 
-
-    with col_criteria:
-        st.markdown("##### 📏 PER 기반 투자 기준")
-        investment_criteria = pd.DataFrame({
-            "PER 범위": ["< 30", "30 ~ 32", "32 ~ 35", "35 ~ 38", "38 ~ 41", "41 ~ 45", ">= 45"],
-            "권장 조치": ["3배 레버리지 매수", "2배 레버리지 매수", "1배 매수", "현금 보유", "3배 매도", "2배 매도", "매도"]
-        })
-        st.dataframe(investment_criteria.set_index('PER 범위'), use_container_width=True)
-
+    # 🚨 수정된 부분: Data Editor를 전체 폭으로 배치 (단일 컬럼)
+    col_editor = st.columns(1)[0] 
+    
+    # PER 기반 투자 기준표 UI는 완전히 제거됨
 
     with col_editor: 
         editor_df = tech_df_raw.copy()
         editor_df['Select'] = editor_df['Ticker'].apply(lambda t: st.session_state['tech_select_state'].get(t, True))
-        editor_df['PER'] = editor_df['TrailingPE'].apply(lambda x: f"{x:.2f}" if x > 0 else "-")
-        editor_df['시가총액'] = editor_df['MarketCap'].apply(format_value)
-        editor_df['순이익'] = editor_df['NetIncome'].apply(format_value)
+        editor_df['PER'] = editor_df['TrailingPE'].apply(lambda x: f"{x:.2f}" if x > 0 else "-") # 컬럼명 'PER' 유지
+        editor_df['시가총액'] = editor_df['MarketCap'].apply(format_value) # 컬럼명 '시가총액' 유지
+        editor_df['순이익'] = editor_df['NetIncome'].apply(format_value) # 컬럼명 '순이익' 유지
 
         st.markdown("**분석 포함 종목 선택(USD)**", help="체크를 해제하면 전체 평균 계산에서 제외됩니다.")
 
@@ -754,5 +715,3 @@ elif st.session_state.active_tab == "다중 티커 비교":
             st.caption("좌상단에 가까울수록 좋은 종목이지만, 높은 수익률을 위해 리스크를 감수하는 것도 중요합니다.")
     else:
         st.info("티커를 입력해 주세요.")
-
-
