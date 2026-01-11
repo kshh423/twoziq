@@ -359,7 +359,17 @@ st.markdown("""
         flex-direction: row !important;
         gap: 8px !important;
     }
+    /* **추가**: st.metric 값의 글자 크기를 줄임 */
+    div[data-testid="stMetricValue"] {
+        font-size: 1.8rem; /* 기본값 2.5rem 보다 작게 조정 */
+        font-weight: 600;
+    }
 
+    /* **추가**: st.metric 레이블의 글자 크기를 줄임 */
+    div[data-testid="stMetricLabel"] {
+        font-size: 0.85rem; /* 기본값 1rem 보다 작게 조정 */
+        font-weight: 400;
+    }
     @media (max-width: 768px) {
         div[data-testid="stHorizontalBlock"] {
             display: grid !important;
@@ -742,6 +752,5 @@ elif st.session_state.active_tab == "다중 티커 비교":
             st.caption("Sharpe 지수 : 빨간색은 상대적으로 낮고, 파란색은 상대적으로 높게 표기함.")
     else:
         st.info("티커를 입력해 주세요.")
-
 
 
