@@ -370,13 +370,16 @@ st.markdown("""
         font-size: 0.85rem; /* 기본값 1rem 보다 작게 조정 */
         font-weight: 400;
     }
+    /* 🚨 1열 강제 배치 수정 (이전에 안내해 드린 수정 사항) */
     @media (max-width: 768px) {
+        /* st.columns가 만드는 Block을 1열 그리드로 강제 재정의 */
         div[data-testid="stHorizontalBlock"] {
             display: grid !important;
-            grid-template-columns: 1fr 1fr !important;
+            grid-template-columns: 1fr !important; /* 1열로 변경 */
             gap: 6px !important;
         }
 
+        /* st.metric을 담고 있는 column 자체도 100% 폭을 가지도록 보장 */
         div[data-testid="column"] {
             width: 100% !important;
             min-width: 0px !important;
@@ -418,7 +421,7 @@ st.markdown("---")
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# 탭 1: 재무 분석 (빅테크) (수정: 현재 PER 표시 제거)
+# 탭 1: 재무 분석 (빅테크) (수정: 현재 PER 표시 제거, 표 재배치)
 # ------------------------------------------------------------------------------
 if st.session_state.active_tab == "빅테크 PER":  # <-- 탭 이름을 "재무 분석"으로 가정하고 수정
 
@@ -451,7 +454,8 @@ if st.session_state.active_tab == "빅테크 PER":  # <-- 탭 이름을 "재무 
     elif group_per_series is None or group_per_series.empty:
         st.info("선택된 종목들의 유효한 데이터가 부족하여 그래프를 표시할 수 없습니다.")
     else:
-        clean_per_values = group_per_series[group_per_series < group_per_series.quantile(0.98)]
+        # 0.98 분위수 이상의 이상치 제거는 주석 처리 (원래 코드에서 삭제되었으므로 복구하지 않음)
+        clean_per_values = group_per_series.dropna()
         avg_per_hist = clean_per_values.mean()
         median_per_hist = clean_per_values.median()
 
@@ -464,10 +468,17 @@ if st.session_state.active_tab == "빅테크 PER":  # <-- 탭 이름을 "재무 
             showlegend=False
         ))
 
+        # PER 레벨 기준선 추가
+        for level, (color, name) in PER_LINE_STYLES.items():
+            fig_per_tab1.add_hline(y=level, line_dash="dot", line_color=color, opacity=0.5,
+                                   annotation_text=name, annotation_position="bottom right")
+
         fig_per_tab1.add_hline(y=avg_per_hist, line_dash="dash", line_color="#d62728",
-                               annotation_text=f"평균: {avg_per_hist:.2f}")
+                               annotation_text=f"평균: {avg_per_hist:.2f}",
+                               annotation_position="bottom left")
         fig_per_tab1.add_hline(y=median_per_hist, line_dash="dot", line_color="#ff7f0e",
-                               annotation_text=f"중앙값: {median_per_hist:.2f}")
+                               annotation_text=f"중앙값: {median_per_hist:.2f}",
+                               annotation_position="top left")
 
         fig_per_tab1.update_layout(
             title="미국 빅테크 Top8 평균 PER",
@@ -505,19 +516,19 @@ if st.session_state.active_tab == "빅테크 PER":  # <-- 탭 이름을 "재무 
 
     st.markdown("---")
 
-    # col_criteria, col_editor = st.columns([1, 3]) # 주석 유지
-    col_editor = st.columns(1)[0]  # <-- st.cloumns(1)[0] -> st.columns(1)[0] 오타 수정
+    # 🚨 수정된 부분: 기준표와 Data Editor를 가로(데스크톱)/세로(모바일) 배치
+    col_criteria, col_editor = st.columns([1, 3]) 
+
+    with col_criteria:
+        st.markdown("##### 📏 PER 기반 투자 기준")
+        investment_criteria = pd.DataFrame({
+            "PER 범위": ["< 30", "30 ~ 32", "32 ~ 35", "35 ~ 38", "38 ~ 41", "41 ~ 45", ">= 45"],
+            "권장 조치": ["3배 레버리지 매수", "2배 레버리지 매수", "1배 매수", "현금 보유", "3배 매도", "2배 매도", "매도"]
+        })
+        st.dataframe(investment_criteria.set_index('PER 범위'), use_container_width=True)
 
 
-    #with col_criteria:
-    #    investment_criteria = pd.DataFrame({
-    #        "PER 범위": ["< 30", "30 ~ 32", "32 ~ 35", "35 ~ 38", "38 ~ 41", "41 ~ 45", ">= 45"],
-    #        "권장 조치": ["3배 레버리지 매수", "2배 레버리지 매수", "1배 매수", "현금 보유", "3배 매도", "2배 매도", "매도"]
-    #    })
-        # ... (이하 주석 처리된 코드)
-
-
-    with col_editor:  # <-- 이 라인의 들여쓰기 레벨을 if st.session_state.active_tab == "재무 분석": 바로 아래 레벨로 수정
+    with col_editor: 
         editor_df = tech_df_raw.copy()
         editor_df['Select'] = editor_df['Ticker'].apply(lambda t: st.session_state['tech_select_state'].get(t, True))
         editor_df['PER (TTM)'] = editor_df['TrailingPE'].apply(lambda x: f"{x:.2f}" if x > 0 else "-")
@@ -731,7 +742,7 @@ elif st.session_state.active_tab == "다중 티커 비교":
             # st.caption(f"ℹ️ 기간: {start_date_multi}~{end_date_multi} | 기준금리 {user_rf}% 반영")
             st.markdown("3️⃣ Tab 3 → 어떤 종목을 선택할 것인가?")
             st.caption(f"**Sharpe Ratio** = (수익률 - {user_rf}%) / 변동성, 통상 **1 이상:** 우수")
-            st.caption("간단히, **Sharpe Ratio**는 ( 리턴 ÷ 리스크 = **투자 매력도** ) 를 나타내는 값 입니다.")
+            st.caption("간단히, Sharpe Ratio는 리턴/리스크. 투자 매력도를 나타내는 값 입니다.")
             st.caption("수치가 높을수록, 적은 기회비용으로 높은 수익을 내는 구조입니다.")
             st.caption(
                 """
@@ -743,16 +754,3 @@ elif st.session_state.active_tab == "다중 티커 비교":
             st.caption("좌상단에 가까울수록 좋은 종목이지만, 높은 수익률을 위해 리스크를 감수하는 것도 중요합니다.")
     else:
         st.info("티커를 입력해 주세요.")
-
-
-
-
-
-
-
-
-
-
-
-
-
