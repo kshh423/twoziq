@@ -514,7 +514,7 @@ if st.session_state.active_tab == "재무 분석":
 
     st.markdown("---")
 
-    col_criteria, col_editor = st.columns([1, 4])
+    col_criteria, col_editor = st.columns([1, 3])
 
     with col_criteria:
         investment_criteria = pd.DataFrame({
@@ -752,6 +752,7 @@ elif st.session_state.active_tab == "다중 티커 비교":
             st.caption("Sharpe 지수 : 빨간색은 상대적으로 낮고, 파란색은 상대적으로 높게 표기함.")
     else:
         st.info("티커를 입력해 주세요.")
+
 
 
 
