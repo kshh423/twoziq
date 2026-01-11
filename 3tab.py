@@ -290,7 +290,7 @@ st.set_page_config(layout="wide", page_title="Twoziq 투자 가이드")
 
 # --- 상태 관리 초기화 ---
 if 'active_tab' not in st.session_state:
-    st.session_state.active_tab = "재무 분석"
+    st.session_state.active_tab = "빅테크 PER"
 # DCA 티커 기본값: QQQ
 if 'dca_ticker_value' not in st.session_state:
     st.session_state.dca_ticker_value = DCA_DEFAULT_TICKER
@@ -305,7 +305,7 @@ with st.sidebar:
     ticker_symbol = None
 
     # 1. 티커 입력 (DCA 탭에만 표시)
-    if st.session_state.active_tab == "적립 모드 (DCA)":
+    if st.session_state.active_tab == "적립식 투자":
         ticker_symbol = st.text_input(
             "DCA 분석 주식 티커:",
             value=st.session_state.dca_ticker_value,
@@ -349,7 +349,7 @@ with st.sidebar:
 # 6. 메뉴 설정 (유지)
 # ==============================================================================
 
-menu_options = ["재무 분석", "적립 모드 (DCA)", "다중 티커 비교"]
+menu_options = ["빅테크 PER", "적립식 투자", "다중 티커 비교"]
 
 st.markdown("""
     <style>
@@ -421,7 +421,7 @@ st.markdown("---")
 # 탭 1: 재무 분석 (빅테크) (수정: 현재 PER 표시 제거)
 # ------------------------------------------------------------------------------
 
-if st.session_state.active_tab == "재무 분석":
+if st.session_state.active_tab == "빅테크 PER":
 
     tech_df_raw = load_big_tech_data(DEFAULT_BIG_TECH_TICKERS)
 
@@ -578,7 +578,7 @@ if st.session_state.active_tab == "재무 분석":
 # ------------------------------------------------------------------------------
 # 탭 2: 적립 모드 (DCA) (유지)
 # ------------------------------------------------------------------------------
-elif st.session_state.active_tab == "적립 모드 (DCA)":
+elif st.session_state.active_tab == "적립식 매수":
 
     # 1. 데이터 로드 (탭 진입 시점에만 실행)
     if not ticker_symbol or ticker_symbol == "N/A_Ignored":
@@ -647,7 +647,7 @@ elif st.session_state.active_tab == "적립 모드 (DCA)":
                    line=dict(color='red', width=2, dash='dash'), yaxis='y1'))
 
     fig_dca.update_layout(
-            title=f"{ticker_symbol} 적립식 투자(DCA) 시뮬레이션", height=500, xaxis_title="날짜", hovermode="x unified",
+            title=f"{ticker_symbol} 적립식 투자 백테스트", height=500, xaxis_title="날짜", hovermode="x unified",
             legend=dict(x=0.01, y=0.99, yanchor="top", xanchor="left"),
             # [수정 1] yaxis (왼쪽 축) 제목 제거
             yaxis=dict(title=dict(text="", font=dict(color="green")), side="left", showgrid=True),
@@ -755,6 +755,7 @@ elif st.session_state.active_tab == "다중 티커 비교":
             st.caption("Sharpe 지수 : 빨간색은 상대적으로 낮고, 파란색은 상대적으로 높게 표기함.")
     else:
         st.info("티커를 입력해 주세요.")
+
 
 
 
