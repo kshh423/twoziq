@@ -394,11 +394,7 @@ st.markdown("---")
 # 탭 1: 재무 분석 (빅테크) (수정: PER 기준선, 기준표, get_per_color 호출 제거)
 # ------------------------------------------------------------------------------
 if st.session_state.active_tab == "Tab 1 빅테크 PER":  
-    st.markdown("1️⃣ Tab 1 → 지금이 투자하기 적당한 시기인가?")
-    st.caption("이 페이지는 단순 매수/매도 신호가 아니라, 투자 속도를 조절하기 위한 참고 지표입니다.")
-    st.caption("ETF는 개별 종목처럼 적정 가치를 계산하는 것이 쉽지 않습니다. ")
-    st.caption("Top 8 빅테크를 하나의 기업이라고 가정해 PER을 산출했습니다.")
-    st.caption("중위값, 평균값을 보시고 현재 주가의 적정성을 판단해보세요. ")
+
 
     tech_df_raw = load_big_tech_data(DEFAULT_BIG_TECH_TICKERS)
 
@@ -533,11 +529,7 @@ elif st.session_state.active_tab == "Tab 2 적립식 투자":
     if not ticker_symbol or ticker_symbol == "N/A_Ignored":
         st.warning("DCA 분석을 위해 사이드바에 유효한 티커를 입력해 주세요.")
         st.stop()
-    st.markdown("2️⃣ Tab 2 → 어떤 방식으로 투자할 것인가?")
-    st.caption("거치식 투자(몰빵투자)는 큰 하락에 대응하기가 어렵습니다. ")
-    st.caption("하락장은 적립식 투자자에게는 평균 매입 단가를 낮출 수 있는 구간입니다.")
-    st.caption("단기 예측보다는 **장기 우상향**을 전제로 **적립식 매수 전략**을 유지하세요.")
-    st.caption("바닥을 잡지 않아도, 안정적인 수익률을 기대할 수 있습니다.")
+
 
     # DCA 분석용 티커 로드 (Section 5 내용)
     with st.spinner(f"[{ticker_symbol}] 데이터 로드 중..."):
@@ -643,17 +635,7 @@ elif st.session_state.active_tab == "Tab 2 적립식 투자":
 elif st.session_state.active_tab == "Tab 3 다중 티커 비교":
 
     
-    st.markdown("3️⃣ Tab 3 → 어떤 종목을 선택할 것인가?")
-    st.caption("간단히, Sharpe Ratio는 리턴/리스크. 투자 매력도를 나타내는 값 입니다. **Sharpe Ratio** = (수익률 - 기준 금리%) / 변동성")
-    st.caption(
-        """
-        <span style='color: red; font-weight: bold;'>빨간색</span>에 비해, 
-        <span style='color: blue; font-weight: bold;'>파란색</span>이 기회비용 대비 높은 수익을 보이는 종목입니다. 
-        """,
-        unsafe_allow_html=True
-    )
-    st.caption("좌상단에 가까울수록 좋은 종목이지만, 높은 수익률을 위해 리스크를 감수하는 것도 중요합니다.")
-    st.caption("배당금 total return은 아직 고려하지 못해 배당주는 박한 평가를 받는 점 참고 바랍니다. \n\n")
+
 
     
     # 세션 상태에서 다중 티커 입력값을 가져와 기본값으로 사용 (탭 전환 시 기본값 설정됨)
@@ -726,6 +708,7 @@ elif st.session_state.active_tab == "Tab 3 다중 티커 비교":
 
     else:
         st.info("티커를 입력해 주세요.")
+
 
 
 
